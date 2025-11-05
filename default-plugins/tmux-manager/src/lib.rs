@@ -39,6 +39,8 @@ impl ZellijPlugin for State {
         request_permission(&[
             PermissionType::ReadApplicationState,
             PermissionType::ChangeApplicationState,
+            PermissionType::OpenTerminalsOrPlugins,
+            PermissionType::RunCommands,
         ]);
     }
 
@@ -179,6 +181,23 @@ impl State {
             BareKey::Char(')') if key.has_no_modifiers() => {
                 self.switch_to_next_session();
                 true
+            }
+
+            // Claude Code orchestration
+            BareKey::Char('C') if key.has_no_modifiers() => {
+                self.launch_claude_pane();
+                hide_self();
+                false
+            }
+            BareKey::Char('A') if key.has_no_modifiers() => {
+                self.launch_claude_tab();
+                hide_self();
+                false
+            }
+            BareKey::Char('N') if key.has_no_modifiers() => {
+                self.create_claude_session();
+                hide_self();
+                false
             }
 
             // UI
@@ -381,6 +400,48 @@ impl State {
             .unwrap_or(false)
     }
 
+    fn launch_claude_pane(&self) {
+        // Launch Claude Code in a new pane in the current session
+        let command = CommandToRun {
+            path: "/opt/node22/bin/claude".into(),
+            args: vec![],
+            cwd: None,
+        };
+        let context = BTreeMap::new();
+        open_command_pane(command, context);
+    }
+
+    fn launch_claude_tab(&self) {
+        // Launch Claude Code in a new tab
+        let command = CommandToRun {
+            path: "/opt/node22/bin/claude".into(),
+            args: vec![],
+            cwd: None,
+        };
+        // First create a new tab
+        new_tab(Some("Claude"), None::<&str>);
+        // Then open the command in it
+        let context = BTreeMap::new();
+        open_command_pane(command, context);
+    }
+
+    fn create_claude_session(&self) {
+        // Create a new session with Claude Code auto-started
+        let session_name = format!("claude-{}", chrono::Utc::now().timestamp());
+
+        // Create the session first
+        switch_session(Some(&session_name));
+
+        // Then launch Claude in it
+        let command = CommandToRun {
+            path: "/opt/node22/bin/claude".into(),
+            args: vec![],
+            cwd: None,
+        };
+        let context = BTreeMap::new();
+        open_command_pane(command, context);
+    }
+
     fn render_session_list(&self, rows: usize, cols: usize) {
         if rows < 5 || cols < 40 {
             print_text(Text::new("Terminal too small"));
@@ -388,7 +449,7 @@ impl State {
         }
 
         // Title
-        let title = "Tmux Session Manager";
+        let title = "Claude Code Orchestrator";
         let title_text = Text::new(title).color_range(3, 0..title.len());
         print_text_with_coordinates(
             title_text,
@@ -683,7 +744,7 @@ impl State {
             return;
         }
 
-        let title = "Tmux Session Manager - Help";
+        let title = "Claude Code Orchestrator - Help";
         print_text_with_coordinates(
             Text::new(title).color_range(3, 0..title.len()),
             (cols.saturating_sub(title.len())) / 2,
@@ -711,6 +772,11 @@ impl State {
             "  d            Detach from session",
             "  (            Switch to previous session",
             "  )            Switch to next session",
+            "",
+            "CLAUDE CODE ORCHESTRATION",
+            "  C            Launch Claude in new pane",
+            "  A            Launch Claude in new tab",
+            "  N            Create new session with Claude",
             "",
             "OTHER",
             "  ?            Toggle this help",

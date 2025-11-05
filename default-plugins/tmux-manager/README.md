@@ -1,17 +1,23 @@
-# Tmux Session Manager
+# Claude Code Orchestrator
 
-A Zellij plugin that provides a tmux-like session management experience with familiar keybindings and a clean, intuitive interface.
+A Zellij plugin that transforms Zellij into a tmux-style AI development orchestrator for Claude Code. Manage multiple Claude instances, sessions, and AI-powered development workflows with familiar keybindings and an intuitive interface.
 
-## Features
+## 🚀 Features
 
+### Claude Code Integration
+- **One-Key Claude Launch**: Instantly spawn Claude Code in new panes, tabs, or sessions
+- **Auto-Start Layout**: Zellij can automatically start Claude Code when launching
+- **Multi-Instance Management**: Run multiple Claude instances across different sessions
+- **Smart Orchestration**: Organize AI-powered development workflows efficiently
+
+### Session Management
 - **Session Overview**: View all active sessions with detailed information (windows, panes, clients)
 - **Tmux-like Keybindings**: Familiar keyboard shortcuts for tmux users
 - **Quick Navigation**: Fast session switching with vim-style navigation
-- **Session Management**: Create, rename, and kill sessions
-- **Clean UI**: Simple, focused interface showing only what matters
+- **Session Operations**: Create, rename, kill, and switch sessions
 - **Current Session Indicator**: Easily identify which session you're currently in
 
-## Installation
+## 📦 Installation
 
 This plugin is included with Zellij as a default plugin. To use it, add it to your Zellij configuration:
 
@@ -28,31 +34,45 @@ keybinds {
 }
 ```
 
-## Usage
+### Auto-Start Claude Code on Launch
 
-### Opening the Manager
+To automatically start Claude Code when launching Zellij, use the Claude orchestrator layout:
 
-Once configured, press `Alt+s` (or your configured keybinding) to open the Tmux Session Manager.
+```bash
+zellij --layout claude-orchestrator
+```
+
+Or set it as default in your config:
+
+```kdl
+default_layout "claude-orchestrator"
+```
+
+## 🎯 Usage
+
+### Opening the Orchestrator
+
+Press `Alt+s` (or your configured keybinding) to open the Claude Code Orchestrator.
 
 ### Main View
 
-The main view displays all active sessions in a table format:
+The main view displays all active sessions in a clean table format:
 
 ```
-                  Tmux Session Manager
+                  Claude Code Orchestrator
 ────────────────────────────────────────────────────────────
 Session           Windows  Panes  Clients
 ────────────────────────────────────────────────────────────
-* main            3        5      1
-  development     2        3      0
-  research        1        2      1
+* claude-main     2        3      1
+  development     4        6      1
+  research        1        2      0
 ────────────────────────────────────────────────────────────
                 3 sessions | ?: Help | q: Quit
 ```
 
 The `*` indicator shows the current session.
 
-## Keybindings
+## ⌨️ Keybindings
 
 ### Navigation
 
@@ -75,87 +95,114 @@ The `*` indicator shows the current session.
 | `(` | Switch to the previous session |
 | `)` | Switch to the next session |
 
+### Claude Code Orchestration 🤖
+
+| Key | Action |
+|-----|--------|
+| `C` | **Launch Claude in new pane** (in current session) |
+| `A` | **Launch Claude in new tab** (creates new tab with Claude) |
+| `N` | **Create new session with Claude** (auto-named, pre-configured) |
+
 ### Other
 
 | Key | Action |
 |-----|--------|
 | `?` | Toggle help screen |
-| `q`, `Esc` | Close the manager |
+| `q`, `Esc` | Close the orchestrator |
 
-## Screens
+## 💡 Workflows
 
-### 1. Session List (Main)
+### Quick Claude Instance in Current Session
 
-The default view showing all active sessions with their details.
+1. Press `Alt+s` to open orchestrator
+2. Press `C` to launch Claude in a new pane
+3. Start coding with AI assistance
 
-### 2. Create Session
+### Dedicated Claude Tab
 
-Press `c` to create a new session. A dialog will appear:
+1. Press `Alt+s`
+2. Press `A` to create a new tab with Claude
+3. Switch between tabs with standard Zellij keybindings
 
-```
-          ┌────────────────────────────────────────┐
-          │          Create New Session            │
-          ├────────────────────────────────────────┤
-          │                                        │
-          │  Session name:                         │
-          │  my-new-session_                       │
-          │                                        │
-          └────────────────────────────────────────┘
-                Enter: Create | Esc: Cancel
-```
+### New AI Development Session
 
-Type the session name and press `Enter` to create and switch to the new session.
+1. Press `Alt+s`
+2. Press `N` to create a timestamped session with Claude pre-loaded
+3. Perfect for isolating different projects or experiments
 
-### 3. Rename Session
+### Organizing Multiple Projects
 
-Press `$` while on the current session to rename it:
+1. Create sessions for each project: `c` → type name → `Enter`
+2. Launch Claude instances in each: `C`
+3. Switch between projects: `(` / `)` or select with arrows + `Enter`
 
-```
-          ┌────────────────────────────────────────┐
-          │            Rename Session              │
-          ├────────────────────────────────────────┤
-          │                                        │
-          │  New name:                             │
-          │  updated-name_                         │
-          │                                        │
-          └────────────────────────────────────────┘
-                Enter: Rename | Esc: Cancel
-```
+## 🎬 Example Use Cases
 
-### 4. Kill Session
-
-Press `x` on a non-current session to kill it (with confirmation):
+### Scenario 1: Multiple AI-Assisted Projects
 
 ```
-          ┌────────────────────────────────────────┐
-          │        Confirm Kill Session            │
-          ├────────────────────────────────────────┤
-          │                                        │
-          │     Kill session 'development'?        │
-          │                                        │
-          └────────────────────────────────────────┘
-              y: Yes | n: No | Esc: Cancel
+Session: frontend (Claude helping with React)
+Session: backend (Claude helping with API design)
+Session: devops (Claude helping with Docker configs)
 ```
 
-### 5. Help Screen
+Quick switch between contexts while maintaining separate Claude conversations for each project.
 
-Press `?` to view the help screen with all available keybindings.
+### Scenario 2: Pair Programming with AI
 
-## Session Naming Rules
+```
+Tab 1: Your code editor
+Tab 2: Claude Code (C to launch)
+Tab 3: Terminal for testing
+```
 
-When creating or renaming sessions, the following rules apply:
+Keep Claude in a dedicated tab for easy reference while coding.
 
-- **Cannot be empty**: Session names must contain at least one character
-- **Cannot contain `/`**: Forward slashes are not allowed in session names
-- **Maximum length**: Session names must be shorter than 108 characters (socket path limitation)
+### Scenario 3: Research & Development
 
-## Tmux Comparison
+```
+Pane 1: Documentation/research
+Pane 2: Claude Code (C to launch in split)
+Pane 3: Experimental code
+```
 
-This plugin is inspired by tmux's session management and uses similar keybindings:
+Side-by-side layout for rapid prototyping with AI assistance.
 
-| Tmux Command | Tmux Manager | Description |
+## 🔧 Advanced Configuration
+
+### Custom Claude Command Path
+
+If Claude is installed in a different location, modify the plugin source to update the path:
+
+```rust
+// In src/lib.rs, update the path
+path: "/your/custom/path/to/claude".into(),
+```
+
+### Custom Session Names
+
+When creating Claude sessions with `N`, they're auto-named with timestamps. To customize:
+
+```rust
+// In create_claude_session() function
+let session_name = format!("your-prefix-{}", chrono::Utc::now().timestamp());
+```
+
+## 📋 Session Naming Rules
+
+When creating or renaming sessions:
+
+- **Cannot be empty**: Must contain at least one character
+- **Cannot contain `/`**: Forward slashes are not allowed
+- **Maximum length**: Must be shorter than 108 characters (socket path limitation)
+
+## 🆚 Comparison with Tmux
+
+This orchestrator is designed for tmux users transitioning to Zellij:
+
+| Tmux Command | Orchestrator | Description |
 |--------------|--------------|-------------|
-| `tmux ls` | Plugin main view | List sessions |
+| `tmux ls` | Main view | List sessions |
 | `tmux switch-client -t` | `Enter` | Switch to session |
 | `tmux new-session -s` | `c` | Create new session |
 | `tmux rename-session` | `$` | Rename current session |
@@ -163,96 +210,41 @@ This plugin is inspired by tmux's session management and uses similar keybinding
 | `tmux detach` | `d` | Detach from session |
 | `Ctrl-b` `(` | `(` | Previous session |
 | `Ctrl-b` `)` | `)` | Next session |
+| *N/A* | `C` | **Launch Claude in pane** |
+| *N/A* | `A` | **Launch Claude in tab** |
+| *N/A* | `N` | **New Claude session** |
 
-## Development
+## 🏗️ Architecture
 
-### Building
+The plugin is built on the Zellij plugin SDK and includes:
 
-To build the plugin:
+- **Session Management**: Full CRUD operations on Zellij sessions
+- **Command Execution**: Spawns Claude Code processes in panes/tabs
+- **State Management**: Tracks sessions, UI modes, and user input
+- **Permission System**: Requests necessary permissions for operations
+- **Event Handling**: Responds to keyboard and session update events
+
+## 🧪 Testing
+
+The plugin includes comprehensive unit tests:
 
 ```bash
 cd default-plugins/tmux-manager
-cargo build --release
-```
-
-### Testing
-
-Run the comprehensive test suite:
-
-```bash
 cargo test
 ```
 
-The test suite covers:
-- Navigation and keyboard input handling
-- Mode transitions and state management
+Test coverage includes:
+- Navigation and keyboard handling
+- Mode transitions
 - Session name validation
 - Error handling
-- Edge cases (empty lists, index clamping)
+- Edge cases
 
-### Test Coverage
-
-The plugin includes 20+ tests covering:
-- ✓ Default state initialization
-- ✓ Navigation (down, up, home, end, vim keys)
-- ✓ Mode transitions (List, Create, Rename, ConfirmKill)
-- ✓ Help screen toggle
-- ✓ Input handling for create and rename modes
-- ✓ Error message clearing
-- ✓ Current session detection
-- ✓ Permission-based actions (rename current only, kill non-current only)
-- ✓ Confirmation dialogs
-- ✓ Session list updates and index clamping
-- ✓ Empty session list handling
-- ✓ Session name validation (empty, slash, length)
-
-## Architecture
-
-The plugin is structured as follows:
-
-```
-State
-├── sessions: Vec<SessionInfo>      // All active sessions
-├── selected_index: usize            // Currently selected session
-├── mode: Mode                       // Current UI mode
-├── colors: Palette                  // Color scheme
-├── show_help: bool                  // Help screen visibility
-├── new_session_name: Option<String> // Buffer for new session name
-├── rename_input: Option<String>     // Buffer for rename input
-└── error_message: Option<String>    // Current error message
-
-Mode enum:
-├── List         // Main session list view
-├── Create       // Create new session dialog
-├── Rename       // Rename session dialog
-└── ConfirmKill  // Kill confirmation dialog
-```
-
-### Event Handling
-
-The plugin subscribes to:
-- `EventType::Key` - Keyboard input
-- `EventType::SessionUpdate` - Session list changes
-- `EventType::ModeUpdate` - Color scheme updates
-
-### Permissions
-
-The plugin requests:
-- `ReadApplicationState` - Read session information
-- `ChangeApplicationState` - Create, rename, kill, and switch sessions
-
-## Tips
-
-- **Quick switching**: Use `(` and `)` to quickly cycle through sessions without opening the full list
-- **Detach shortcut**: Press `d` to quickly detach from the current session
-- **Vim navigation**: Use `j`/`k` for faster navigation if you're a vim user
-- **Help always available**: Press `?` anytime to see all available keybindings
-
-## Troubleshooting
+## 🐛 Troubleshooting
 
 ### Plugin doesn't open
 
-Check your Zellij configuration to ensure the keybinding is set correctly:
+Check your Zellij configuration for the correct keybinding:
 
 ```kdl
 bind "Alt s" {
@@ -262,26 +254,31 @@ bind "Alt s" {
 }
 ```
 
+### Claude doesn't launch
+
+1. Verify Claude is installed: `which claude`
+2. Check the path in the plugin matches your installation
+3. Ensure you have `RunCommands` permission
+
 ### Cannot rename/kill sessions
 
 - **Rename**: You can only rename the current session (marked with `*`)
-- **Kill**: You cannot kill the current session. Switch to another session first, then kill the previous one.
+- **Kill**: You cannot kill the current session. Switch to another first.
 
-### Session name rejected
+## 📚 Resources
 
-Ensure your session name:
-- Is not empty
-- Does not contain `/` characters
-- Is shorter than 108 characters
+- [Zellij Documentation](https://zellij.dev)
+- [Claude Code Documentation](https://docs.anthropic.com/claude/docs)
+- [Plugin Development Guide](https://zellij.dev/documentation/plugins)
 
-## License
+## 🤝 Contributing
 
-This plugin is part of the Zellij project and follows the same license.
+Contributions are welcome! This plugin is part of the Zellij project.
 
-## Contributing
+## 📄 License
 
-Contributions are welcome! Please submit issues and pull requests to the main Zellij repository.
+This plugin is part of the Zellij project and follows the same MIT license.
 
-## Credits
+## 🎉 Credits
 
-Inspired by tmux's session management interface and designed to provide a familiar experience for tmux users transitioning to Zellij.
+Built on the Zellij plugin SDK, inspired by tmux's session management, and enhanced for AI-powered development workflows with Claude Code.
