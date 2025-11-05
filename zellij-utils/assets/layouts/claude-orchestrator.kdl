@@ -5,7 +5,7 @@ layout {
     pane split_direction="Vertical" {
         pane {
             command "claude"
-            cwd "/home/user"
+            // cwd defaults to current working directory
         }
     }
     pane size=2 borderless=true {
