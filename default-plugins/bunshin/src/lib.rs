@@ -449,7 +449,7 @@ impl State {
         }
 
         // Title
-        let title = "Claude Code Orchestrator";
+        let title = "Bunshin - Claude Code Orchestrator";
         let title_text = Text::new(title).color_range(3, 0..title.len());
         print_text_with_coordinates(
             title_text,
@@ -744,7 +744,7 @@ impl State {
             return;
         }
 
-        let title = "Claude Code Orchestrator - Help";
+        let title = "Bunshin - Help";
         print_text_with_coordinates(
             Text::new(title).color_range(3, 0..title.len()),
             (cols.saturating_sub(title.len())) / 2,

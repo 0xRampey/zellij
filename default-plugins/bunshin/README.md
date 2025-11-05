@@ -1,6 +1,8 @@
-# Claude Code Orchestrator
+# Bunshin (分身) - Claude Code Orchestrator
 
-A Zellij plugin that transforms Zellij into a tmux-style AI development orchestrator for Claude Code. Manage multiple Claude instances, sessions, and AI-powered development workflows with familiar keybindings and an intuitive interface.
+**Bunshin** (Japanese for "clone" or "doppelganger") is a Zellij plugin that transforms Zellij into a tmux-style AI development orchestrator for Claude Code. Manage multiple Claude instances, sessions, and AI-powered development workflows with familiar keybindings and an intuitive interface.
+
+> *Create shadow clones of Claude Code across your development workspace*
 
 ## 🚀 Features
 

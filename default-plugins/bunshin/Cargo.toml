@@ -1,5 +1,5 @@
 [package]
-name = "tmux-manager"
+name = "bunshin"
 version = "0.1.0"
 authors = ["Zellij Contributors"]
 edition = "2021"
