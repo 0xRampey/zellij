@@ -14,22 +14,19 @@ echo ""
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Step 1: Build Bunshin plugin
+# Step 1: Build Bunshin plugin (force rebuild)
 echo "📦 Step 1/4: Building Bunshin plugin..."
 cd default-plugins/bunshin
+cargo clean
 cargo build --release --target wasm32-wasip1
-echo "   ✅ Plugin built: target/wasm32-wasip1/release/bunshin.wasm"
+echo "   ✅ Plugin built: ../../target/wasm32-wasip1/release/bunshin.wasm"
 echo ""
 
-# Step 2: Build Zellij binary (if not already built)
+# Step 2: Build Zellij binary
 cd "$SCRIPT_DIR"
-if [ ! -f "target/release/zellij" ]; then
-    echo "📦 Step 2/4: Building Zellij binary (this may take a few minutes)..."
-    cargo build --release
-    echo "   ✅ Zellij built: target/release/zellij"
-else
-    echo "📦 Step 2/4: Zellij binary already built ✅"
-fi
+echo "📦 Step 2/4: Building Zellij binary..."
+cargo build --release
+echo "   ✅ Zellij built: target/release/zellij"
 echo ""
 
 # Step 3: Create a test installation directory
