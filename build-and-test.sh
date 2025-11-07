@@ -17,7 +17,13 @@ echo "📦 Step 1/3: Building Zellij + Bunshin plugin..."
 echo "   (This will take 2-5 minutes on first run)"
 echo ""
 
-cargo build --release 2>&1 | grep -E "Compiling|Finished|error" || true
+# Build Zellij binary (native target)
+echo "   Building Zellij binary..."
+cargo build --release 2>&1 | grep -E "Compiling zellij|Finished|error" || true
+
+# Build Bunshin plugin (wasm target)
+echo "   Building Bunshin plugin..."
+cargo build --release --target wasm32-wasip1 -p bunshin 2>&1 | grep -E "Compiling bunshin|Finished|error" || true
 echo ""
 
 # Step 2: Copy to test directory
