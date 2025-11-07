@@ -109,15 +109,15 @@ export ZELLIJ_CONFIG_DIR="TEST_DIR_PLACEHOLDER/config"
 ZELLIJ_BIN="TEST_DIR_PLACEHOLDER/bin/zellij"
 LAYOUT="TEST_DIR_PLACEHOLDER/config/bunshin.kdl"
 
-# Check if there are existing sessions
-EXISTING_SESSIONS=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | wc -l)
+# Check if there are active sessions (exclude EXITED sessions)
+ACTIVE_SESSIONS=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | grep -v "EXITED" | wc -l)
 
-if [ "$EXISTING_SESSIONS" -gt 0 ]; then
-    # Sessions exist - attach to first session and open session manager
-    SESSION_NAME=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | head -1 | awk '{print $1}')
+if [ "$ACTIVE_SESSIONS" -gt 0 ]; then
+    # Active sessions exist - attach to first active session
+    SESSION_NAME=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | grep -v "EXITED" | head -1 | awk '{print $1}')
     exec "$ZELLIJ_BIN" attach "$SESSION_NAME" --create
 else
-    # No sessions - create new session with Claude layout
+    # No active sessions - create new session with Claude layout
     exec "$ZELLIJ_BIN" --layout "$LAYOUT" "$@"
 fi
 SCRIPT
