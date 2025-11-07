@@ -127,6 +127,9 @@ keybinds {
         bind "Ctrl b" "c" {
             NewTab;
         }
+        bind "Ctrl b" "d" {
+            Detach;
+        }
     }
 }
 EOF
@@ -173,6 +176,7 @@ Usage:
 Keybindings:
   Ctrl+b s  Open Bunshin session manager (tmux-style!)
   Ctrl+b c  Create new tab/window
+  Ctrl+b d  Detach from session
 
 Inside session manager:
   C         Spawn Claude in new pane
