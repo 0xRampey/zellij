@@ -213,8 +213,17 @@ HELP
         fi
         ;;
     *)
-        # Default launch - Claude auto-starts from layout file
-        exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" --layout "$BUNSHIN_LAYOUT" "$@"
+        # Check if there are existing sessions
+        EXISTING_SESSIONS=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | wc -l)
+
+        if [ "$EXISTING_SESSIONS" -gt 0 ]; then
+            # Sessions exist - attach to first session
+            SESSION_NAME=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | head -1 | awk '{print $1}')
+            exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" attach "$SESSION_NAME" --create
+        else
+            # No sessions - create new session with Claude layout
+            exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" --layout "$BUNSHIN_LAYOUT" "$@"
+        fi
         ;;
 esac
 EOF

@@ -103,12 +103,31 @@ echo ""
 
 # Step 4: Create launch script
 echo "📝 Step 4/4: Creating launch script..."
-cat > "$TEST_DIR/bin/bunshin-test" << EOF
+cat > "$TEST_DIR/bin/bunshin-test" << 'SCRIPT'
 #!/bin/bash
-export ZELLIJ_CONFIG_DIR="$TEST_DIR/config"
-# Launch with bunshin layout (Claude auto-starts)
-exec "$TEST_DIR/bin/zellij" --layout "$TEST_DIR/config/bunshin.kdl" "\$@"
-EOF
+export ZELLIJ_CONFIG_DIR="TEST_DIR_PLACEHOLDER/config"
+ZELLIJ_BIN="TEST_DIR_PLACEHOLDER/bin/zellij"
+LAYOUT="TEST_DIR_PLACEHOLDER/config/bunshin.kdl"
+
+# Check if there are existing sessions
+EXISTING_SESSIONS=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | wc -l)
+
+if [ "$EXISTING_SESSIONS" -gt 0 ]; then
+    # Sessions exist - attach to first session and open session manager
+    SESSION_NAME=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | head -1 | awk '{print $1}')
+    exec "$ZELLIJ_BIN" attach "$SESSION_NAME" --create
+else
+    # No sessions - create new session with Claude layout
+    exec "$ZELLIJ_BIN" --layout "$LAYOUT" "$@"
+fi
+SCRIPT
+
+# Replace TEST_DIR_PLACEHOLDER with actual path
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|TEST_DIR_PLACEHOLDER|$TEST_DIR|g" "$TEST_DIR/bin/bunshin-test"
+else
+    sed -i "s|TEST_DIR_PLACEHOLDER|$TEST_DIR|g" "$TEST_DIR/bin/bunshin-test"
+fi
 
 chmod +x "$TEST_DIR/bin/bunshin-test"
 echo "   ✅ Launch script: $TEST_DIR/bin/bunshin-test"
