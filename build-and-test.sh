@@ -72,6 +72,9 @@ keybinds {
         bind "Ctrl b" "c" {
             NewTab;
         }
+        bind "Ctrl b" "d" {
+            Detach;
+        }
     }
 }
 EOF
