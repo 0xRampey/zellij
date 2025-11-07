@@ -1,106 +1,51 @@
 #!/bin/bash
-# Debug script to verify Bunshin test installation
 
-echo "🔍 Bunshin Debug - Checking Installation"
-echo "========================================"
+echo "🔍 Debugging Bunshin Installation"
+echo "=================================="
 echo ""
 
 TEST_DIR="$HOME/.bunshin-test"
+ZELLIJ_BIN="$TEST_DIR/bin/zellij"
 
-# Check if test directory exists
-if [ ! -d "$TEST_DIR" ]; then
-    echo "❌ Test directory not found: $TEST_DIR"
-    echo "   Run ./test-bunshin.sh first!"
+echo "1. Checking if files exist..."
+echo "   Zellij binary: $([ -f "$ZELLIJ_BIN" ] && echo "✅ exists" || echo "❌ missing")"
+echo "   Launch script: $([ -f "$TEST_DIR/bin/bunshin-test" ] && echo "✅ exists" || echo "❌ missing")"
+echo "   Config file: $([ -f "$TEST_DIR/config/config.kdl" ] && echo "✅ exists" || echo "❌ missing")"
+echo "   Layout file: $([ -f "$TEST_DIR/config/bunshin.kdl" ] && echo "✅ exists" || echo "❌ missing")"
+echo ""
+
+echo "2. Testing Zellij binary..."
+if "$ZELLIJ_BIN" --version 2>&1; then
+    echo "   ✅ Zellij binary works"
+else
+    echo "   ❌ Zellij binary failed"
     exit 1
 fi
-
-echo "✅ Test directory exists: $TEST_DIR"
 echo ""
 
-# Check directory structure
-echo "📁 Directory Structure:"
-tree -L 3 "$TEST_DIR" 2>/dev/null || find "$TEST_DIR" -type f -o -type d | head -20
+echo "3. Testing list-sessions command..."
+SESSIONS=$("$ZELLIJ_BIN" list-sessions 2>&1)
+echo "   Output: $SESSIONS"
+echo "   Count: $(echo "$SESSIONS" | wc -l | xargs)"
 echo ""
 
-# Check if layout file exists
-LAYOUT_FILE="$TEST_DIR/config/layouts/claude-orchestrator.kdl"
-if [ -f "$LAYOUT_FILE" ]; then
-    echo "✅ Layout file exists: $LAYOUT_FILE"
-    echo "   Contents:"
-    cat "$LAYOUT_FILE"
+echo "4. Testing layout file..."
+if [ -f "$TEST_DIR/config/bunshin.kdl" ]; then
+    echo "   Layout file contents:"
+    cat "$TEST_DIR/config/bunshin.kdl"
 else
-    echo "❌ Layout file NOT found: $LAYOUT_FILE"
-    echo "   Looking for layout files..."
-    find "$TEST_DIR" -name "*.kdl" -type f
+    echo "   ❌ Layout file missing!"
 fi
 echo ""
 
-# Check config file
-CONFIG_FILE="$TEST_DIR/config/config.kdl"
-if [ -f "$CONFIG_FILE" ]; then
-    echo "✅ Config file exists: $CONFIG_FILE"
-    echo "   Contents:"
-    cat "$CONFIG_FILE"
-else
-    echo "❌ Config file NOT found: $CONFIG_FILE"
-fi
+echo "5. Launch script contents:"
+cat "$TEST_DIR/bin/bunshin-test"
 echo ""
 
-# Check launch script
-LAUNCH_SCRIPT="$TEST_DIR/bin/bunshin-test"
-if [ -f "$LAUNCH_SCRIPT" ]; then
-    echo "✅ Launch script exists: $LAUNCH_SCRIPT"
-    echo "   Contents:"
-    cat "$LAUNCH_SCRIPT"
-else
-    echo "❌ Launch script NOT found: $LAUNCH_SCRIPT"
-fi
+echo "6. Trying to launch Zellij with verbose output..."
+echo "   Running: ZELLIJ_CONFIG_DIR=$TEST_DIR/config $ZELLIJ_BIN --layout $TEST_DIR/config/bunshin.kdl"
+echo "   Press Ctrl+C if it hangs..."
 echo ""
 
-# Check Zellij binary
-ZELLIJ_BIN="$TEST_DIR/bin/zellij"
-if [ -f "$ZELLIJ_BIN" ]; then
-    echo "✅ Zellij binary exists: $ZELLIJ_BIN"
-    VERSION=$("$ZELLIJ_BIN" --version 2>&1 || echo "unknown")
-    echo "   Version: $VERSION"
-else
-    echo "❌ Zellij binary NOT found: $ZELLIJ_BIN"
-fi
-echo ""
-
-# Check plugin
-PLUGIN_FILE="$TEST_DIR/plugins/bunshin.wasm"
-if [ -f "$PLUGIN_FILE" ]; then
-    echo "✅ Plugin exists: $PLUGIN_FILE"
-    SIZE=$(ls -lh "$PLUGIN_FILE" | awk '{print $5}')
-    echo "   Size: $SIZE"
-else
-    echo "❌ Plugin NOT found: $PLUGIN_FILE"
-fi
-echo ""
-
-# Test environment variables
-echo "🔍 Testing environment setup..."
 export ZELLIJ_CONFIG_DIR="$TEST_DIR/config"
-echo "   ZELLIJ_CONFIG_DIR=$ZELLIJ_CONFIG_DIR"
-echo "   Expected layout path: $ZELLIJ_CONFIG_DIR/layouts/claude-orchestrator.kdl"
-
-if [ -f "$ZELLIJ_CONFIG_DIR/layouts/claude-orchestrator.kdl" ]; then
-    echo "   ✅ Layout file accessible via ZELLIJ_CONFIG_DIR"
-else
-    echo "   ❌ Layout file NOT accessible"
-fi
-echo ""
-
-# Try to verify Zellij can find the layout
-echo "🧪 Testing Zellij layout resolution..."
-export ZELLIJ_CONFIG_DIR="$TEST_DIR/config"
-"$ZELLIJ_BIN" setup --check 2>&1 || true
-echo ""
-
-echo "========================================"
-echo "🏁 Debug Complete"
-echo ""
-echo "If layout file exists but Zellij can't find it, try:"
-echo "   1. Use full path: $ZELLIJ_BIN --config $CONFIG_FILE --layout $LAYOUT_FILE"
-echo "   2. Or remove 'default_layout' line from config and launch manually"
+"$ZELLIJ_BIN" --layout "$TEST_DIR/config/bunshin.kdl"
