@@ -288,6 +288,7 @@ impl State {
         if let Some(session) = self.sessions.get(self.selected_index) {
             if !session.is_current_session {
                 switch_session(Some(&session.name));
+                hide_self(); // Close plugin after switching
             }
         }
     }

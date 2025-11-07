@@ -62,11 +62,15 @@ echo "   ✅ Created layout file"
 cat > "$TEST_DIR/config/config.kdl" << EOF
 keybinds {
     shared_except "locked" {
-        bind "Ctrl b" {
+        // Tmux-style keybindings
+        bind "Ctrl b" "s" {
             LaunchOrFocusPlugin "file:$TEST_DIR/plugins/bunshin.wasm" {
                 floating true
                 move_to_focused_tab true
             }
+        }
+        bind "Ctrl b" "c" {
+            NewTab;
         }
     }
 }
