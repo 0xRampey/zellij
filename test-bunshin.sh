@@ -66,7 +66,8 @@ EOF
 cat > "$TEST_DIR/config/config.kdl" << 'EOF'
 keybinds {
     shared_except "locked" {
-        bind "Alt s" {
+        // Tmux-style keybinding: Ctrl+b to open Bunshin
+        bind "Ctrl b" {
             LaunchOrFocusPlugin "file:PLUGIN_PATH" {
                 floating true
                 move_to_focused_tab true
