@@ -112,8 +112,12 @@ keybinds {
 default_layout "claude-orchestrator"
 EOF
 
-# Replace plugin path in config
-sed -i "s|BUNSHIN_PLUGIN_PATH|$BUNSHIN_DIR/plugins/bunshin.wasm|g" "$BUNSHIN_DIR/config/config.kdl"
+# Replace plugin path in config (macOS/Linux compatible)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|BUNSHIN_PLUGIN_PATH|$BUNSHIN_DIR/plugins/bunshin.wasm|g" "$BUNSHIN_DIR/config/config.kdl"
+else
+    sed -i "s|BUNSHIN_PLUGIN_PATH|$BUNSHIN_DIR/plugins/bunshin.wasm|g" "$BUNSHIN_DIR/config/config.kdl"
+fi
 
 # Create claude-orchestrator layout
 echo "🎨 Creating layouts..."
@@ -224,9 +228,14 @@ HELP
 esac
 EOF
 
-# Replace placeholders in wrapper
-sed -i "s|HOME_DIR|$HOME|g" "$BUNSHIN_DIR/bin/bunshin"
-sed -i "s|ZELLIJ_PATH|$ZELLIJ_PATH|g" "$BUNSHIN_DIR/bin/bunshin"
+# Replace placeholders in wrapper (macOS/Linux compatible)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|HOME_DIR|$HOME|g" "$BUNSHIN_DIR/bin/bunshin"
+    sed -i '' "s|ZELLIJ_PATH|$ZELLIJ_PATH|g" "$BUNSHIN_DIR/bin/bunshin"
+else
+    sed -i "s|HOME_DIR|$HOME|g" "$BUNSHIN_DIR/bin/bunshin"
+    sed -i "s|ZELLIJ_PATH|$ZELLIJ_PATH|g" "$BUNSHIN_DIR/bin/bunshin"
+fi
 chmod +x "$BUNSHIN_DIR/bin/bunshin"
 
 # Add to PATH if not already there

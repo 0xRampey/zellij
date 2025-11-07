@@ -63,8 +63,12 @@ keybinds {
 default_layout "claude-orchestrator"
 EOF
 
-# Replace plugin path
-sed -i "s|PLUGIN_PATH|$TEST_DIR/plugins/bunshin.wasm|g" "$TEST_DIR/config/config.kdl"
+# Replace plugin path (macOS/Linux compatible)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|PLUGIN_PATH|$TEST_DIR/plugins/bunshin.wasm|g" "$TEST_DIR/config/config.kdl"
+else
+    sed -i "s|PLUGIN_PATH|$TEST_DIR/plugins/bunshin.wasm|g" "$TEST_DIR/config/config.kdl"
+fi
 
 echo "   ✅ Test environment: $TEST_DIR"
 echo ""
