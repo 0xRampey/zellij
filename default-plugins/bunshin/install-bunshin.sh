@@ -117,8 +117,8 @@ cat > "$BUNSHIN_DIR/config/config.kdl" << 'EOF'
 
 keybinds {
     shared_except "locked" {
-        // Open Bunshin orchestrator with Alt+s (for session management)
-        bind "Alt s" {
+        // Tmux-style keybinding: Ctrl+b to open Bunshin orchestrator
+        bind "Ctrl b" {
             LaunchOrFocusPlugin "file:BUNSHIN_PLUGIN_PATH" {
                 floating true
                 move_to_focused_tab true
@@ -167,8 +167,10 @@ Usage:
   bunshin --version          Show version
   bunshin --help             Show this help
 
-Keybindings (inside Bunshin):
-  Alt+s     Open orchestrator
+Keybindings:
+  Ctrl+b    Open Bunshin orchestrator (tmux-style!)
+
+Inside orchestrator:
   C         Spawn Claude in new pane
   A         Spawn Claude in new tab
   N         Create new session with Claude
