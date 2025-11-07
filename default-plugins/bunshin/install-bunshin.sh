@@ -41,7 +41,7 @@ echo ""
 
 # Create Bunshin directory
 echo "📁 Creating Bunshin directory..."
-mkdir -p "$BUNSHIN_DIR"/{bin,plugins,config,layouts}
+mkdir -p "$BUNSHIN_DIR"/{bin,plugins,config/layouts}
 
 # Check if Zellij is already installed
 ZELLIJ_PATH=""
@@ -121,7 +121,7 @@ fi
 
 # Create claude-orchestrator layout
 echo "🎨 Creating layouts..."
-cat > "$BUNSHIN_DIR/layouts/claude-orchestrator.kdl" << 'EOF'
+cat > "$BUNSHIN_DIR/config/layouts/claude-orchestrator.kdl" << 'EOF'
 layout {
     pane size=1 borderless=true {
         plugin location="tab-bar"
@@ -160,11 +160,10 @@ cat > "$BUNSHIN_DIR/bin/bunshin" << 'EOF'
 BUNSHIN_DIR="HOME_DIR/.bunshin"
 ZELLIJ_BIN="ZELLIJ_PATH"
 BUNSHIN_CONFIG="$BUNSHIN_DIR/config/config.kdl"
-LAYOUTS_DIR="$BUNSHIN_DIR/layouts"
+LAYOUTS_DIR="$BUNSHIN_DIR/config/layouts"
 
-# Set Zellij config directory
+# Set Zellij config directory (Zellij will look for layouts in config_dir/layouts/)
 export ZELLIJ_CONFIG_DIR="$BUNSHIN_DIR/config"
-export ZELLIJ_LAYOUT_DIR="$LAYOUTS_DIR"
 
 # Parse arguments
 case "${1:-}" in

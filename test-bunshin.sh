@@ -36,7 +36,7 @@ echo ""
 echo "📁 Step 3/4: Setting up test environment..."
 TEST_DIR="$HOME/.bunshin-test"
 rm -rf "$TEST_DIR"
-mkdir -p "$TEST_DIR"/{bin,plugins,config,layouts}
+mkdir -p "$TEST_DIR"/{bin,plugins,config/layouts}
 
 # Copy Zellij binary
 cp target/release/zellij "$TEST_DIR/bin/"
@@ -44,8 +44,8 @@ cp target/release/zellij "$TEST_DIR/bin/"
 # Copy Bunshin plugin
 cp target/wasm32-wasip1/release/bunshin.wasm "$TEST_DIR/plugins/"
 
-# Copy layout
-cp zellij-utils/assets/layouts/claude-orchestrator.kdl "$TEST_DIR/layouts/"
+# Copy layout (Zellij expects layouts in config_dir/layouts/)
+cp zellij-utils/assets/layouts/claude-orchestrator.kdl "$TEST_DIR/config/layouts/"
 
 # Create minimal config
 cat > "$TEST_DIR/config/config.kdl" << 'EOF'
@@ -78,7 +78,6 @@ echo "📝 Step 4/4: Creating launch script..."
 cat > "$TEST_DIR/bin/bunshin-test" << EOF
 #!/bin/bash
 export ZELLIJ_CONFIG_DIR="$TEST_DIR/config"
-export ZELLIJ_LAYOUT_DIR="$TEST_DIR/layouts"
 exec "$TEST_DIR/bin/zellij" "\$@"
 EOF
 
