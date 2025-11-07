@@ -27,9 +27,11 @@ This plugin is included with Zellij as a default plugin. To use it, add it to yo
 // In your Zellij config file (~/.config/zellij/config.kdl)
 keybinds {
     shared_except "locked" {
-        bind "Alt s" {
-            LaunchOrFocusPlugin "tmux-manager" {
+        // Use Ctrl+b for tmux-style muscle memory!
+        bind "Ctrl b" {
+            LaunchOrFocusPlugin "bunshin" {
                 floating true
+                move_to_focused_tab true
             }
         }
     }
