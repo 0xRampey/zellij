@@ -459,6 +459,19 @@ impl State {
             None,
         );
 
+        // If no sessions, show message
+        if self.sessions.is_empty() {
+            let message = "No sessions found. Loading...";
+            print_text_with_coordinates(
+                Text::new(message),
+                (cols.saturating_sub(message.len())) / 2,
+                rows / 2,
+                None,
+                None,
+            );
+            return;
+        }
+
         // Headers
         let header_y = 3;
         let name_col = 2;
