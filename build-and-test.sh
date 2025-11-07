@@ -1,0 +1,104 @@
+#!/bin/bash
+set -e
+
+echo "╔════════════════════════════════════════════════════════════════╗"
+echo "║                                                                ║"
+echo "║     🥷 BUNSHIN - Quick Build & Test 🥷                        ║"
+echo "║                                                                ║"
+echo "╚════════════════════════════════════════════════════════════════╝"
+echo ""
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# Step 1: Build BOTH Zellij and Plugin together
+echo "📦 Step 1/3: Building Zellij + Bunshin plugin..."
+echo "   (This will take 2-5 minutes on first run)"
+echo ""
+
+cargo build --release 2>&1 | grep -E "Compiling|Finished|error" || true
+echo ""
+
+# Step 2: Copy to test directory
+echo "📁 Step 2/3: Setting up test installation..."
+TEST_DIR="$HOME/.bunshin-test"
+rm -rf "$TEST_DIR"
+mkdir -p "$TEST_DIR"/{bin,plugins,config}
+
+# Copy Zellij binary
+cp target/release/zellij "$TEST_DIR/bin/"
+echo "   ✅ Copied Zellij binary"
+
+# Copy Bunshin plugin
+cp target/wasm32-wasip1/release/bunshin.wasm "$TEST_DIR/plugins/"
+echo "   ✅ Copied Bunshin plugin"
+
+# Create layout file
+cat > "$TEST_DIR/config/bunshin.kdl" << 'EOF'
+layout {
+    pane size=1 borderless=true {
+        plugin location="tab-bar"
+    }
+    pane split_direction="Vertical" {
+        pane {
+            command "claude"
+        }
+    }
+    pane size=2 borderless=true {
+        plugin location="status-bar"
+    }
+}
+EOF
+echo "   ✅ Created layout file"
+
+# Create config file
+cat > "$TEST_DIR/config/config.kdl" << EOF
+keybinds {
+    shared_except "locked" {
+        bind "Ctrl b" {
+            LaunchOrFocusPlugin "file:$TEST_DIR/plugins/bunshin.wasm" {
+                floating true
+                move_to_focused_tab true
+            }
+        }
+    }
+}
+EOF
+echo "   ✅ Created config file"
+echo ""
+
+# Step 3: Create launch script
+echo "📝 Step 3/3: Creating launch script..."
+cat > "$TEST_DIR/bin/bunshin-test" << EOF
+#!/bin/bash
+export ZELLIJ_CONFIG_DIR="$TEST_DIR/config"
+exec "$TEST_DIR/bin/zellij" --layout "$TEST_DIR/config/bunshin.kdl" "\$@"
+EOF
+
+chmod +x "$TEST_DIR/bin/bunshin-test"
+echo "   ✅ Launch script ready"
+echo ""
+
+# Verify build
+echo "🔍 Verifying build..."
+ZELLIJ_VERSION=$("$TEST_DIR/bin/zellij" --version 2>&1 | head -1)
+PLUGIN_SIZE=$(ls -lh "$TEST_DIR/plugins/bunshin.wasm" | awk '{print $5}')
+
+echo "   Zellij: $ZELLIJ_VERSION"
+echo "   Plugin: $PLUGIN_SIZE"
+echo ""
+
+echo "╔════════════════════════════════════════════════════════════════╗"
+echo "║                  ✅ BUILD COMPLETE! ✅                         ║"
+echo "╚════════════════════════════════════════════════════════════════╝"
+echo ""
+echo "🚀 Launch Bunshin:"
+echo ""
+echo "   $TEST_DIR/bin/bunshin-test"
+echo ""
+echo "📖 Usage:"
+echo "   • Claude starts automatically in your current directory"
+echo "   • Press Ctrl+b to open session manager"
+echo "   • Press Ctrl+o then 'd' to detach"
+echo ""
