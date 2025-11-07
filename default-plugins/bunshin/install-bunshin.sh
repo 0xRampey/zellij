@@ -91,7 +91,26 @@ else
     echo "   ⚠️  Warning: Plugin not found, will need to build it"
 fi
 
-# Create Zellij config for Bunshin with embedded layout
+# Create Bunshin layout file
+echo "⚙️  Creating Bunshin layout..."
+cat > "$BUNSHIN_DIR/config/bunshin.kdl" << 'EOF'
+layout {
+    pane size=1 borderless=true {
+        plugin location="tab-bar"
+    }
+    pane split_direction="Vertical" {
+        pane {
+            command "claude"
+            // cwd defaults to current working directory
+        }
+    }
+    pane size=2 borderless=true {
+        plugin location="status-bar"
+    }
+}
+EOF
+
+# Create Zellij config for Bunshin
 echo "⚙️  Configuring Bunshin..."
 cat > "$BUNSHIN_DIR/config/config.kdl" << 'EOF'
 // Bunshin (分身) - Auto-generated Configuration
@@ -105,22 +124,6 @@ keybinds {
                 move_to_focused_tab true
             }
         }
-    }
-}
-
-// Embedded layout - Claude auto-starts in current directory
-layout {
-    pane size=1 borderless=true {
-        plugin location="tab-bar"
-    }
-    pane split_direction="Vertical" {
-        pane {
-            command "claude"
-            // cwd defaults to current working directory
-        }
-    }
-    pane size=2 borderless=true {
-        plugin location="status-bar"
     }
 }
 EOF
@@ -141,6 +144,7 @@ cat > "$BUNSHIN_DIR/bin/bunshin" << 'EOF'
 BUNSHIN_DIR="HOME_DIR/.bunshin"
 ZELLIJ_BIN="ZELLIJ_PATH"
 BUNSHIN_CONFIG="$BUNSHIN_DIR/config/config.kdl"
+BUNSHIN_LAYOUT="$BUNSHIN_DIR/config/bunshin.kdl"
 
 # Set Zellij config directory
 export ZELLIJ_CONFIG_DIR="$BUNSHIN_DIR/config"
@@ -188,8 +192,8 @@ HELP
         fi
         ;;
     *)
-        # Default launch - Claude auto-starts from embedded layout
-        exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" "$@"
+        # Default launch - Claude auto-starts from layout file
+        exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" --layout "$BUNSHIN_LAYOUT" "$@"
         ;;
 esac
 EOF

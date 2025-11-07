@@ -44,20 +44,8 @@ cp target/release/zellij "$TEST_DIR/bin/"
 # Copy Bunshin plugin
 cp target/wasm32-wasip1/release/bunshin.wasm "$TEST_DIR/plugins/"
 
-# Create config with embedded layout (no external files needed!)
-cat > "$TEST_DIR/config/config.kdl" << 'EOF'
-keybinds {
-    shared_except "locked" {
-        bind "Alt s" {
-            LaunchOrFocusPlugin "file:PLUGIN_PATH" {
-                floating true
-                move_to_focused_tab true
-            }
-        }
-    }
-}
-
-// Embedded layout - no external files needed!
+# Create layout file (Zellij doesn't support embedded layouts in config.kdl)
+cat > "$TEST_DIR/config/bunshin.kdl" << 'EOF'
 layout {
     pane size=1 borderless=true {
         plugin location="tab-bar"
@@ -70,6 +58,20 @@ layout {
     }
     pane size=2 borderless=true {
         plugin location="status-bar"
+    }
+}
+EOF
+
+# Create config file that references the layout
+cat > "$TEST_DIR/config/config.kdl" << 'EOF'
+keybinds {
+    shared_except "locked" {
+        bind "Alt s" {
+            LaunchOrFocusPlugin "file:PLUGIN_PATH" {
+                floating true
+                move_to_focused_tab true
+            }
+        }
     }
 }
 EOF
@@ -89,7 +91,8 @@ echo "📝 Step 4/4: Creating launch script..."
 cat > "$TEST_DIR/bin/bunshin-test" << EOF
 #!/bin/bash
 export ZELLIJ_CONFIG_DIR="$TEST_DIR/config"
-exec "$TEST_DIR/bin/zellij" "\$@"
+# Launch with bunshin layout (Claude auto-starts)
+exec "$TEST_DIR/bin/zellij" --layout "$TEST_DIR/config/bunshin.kdl" "\$@"
 EOF
 
 chmod +x "$TEST_DIR/bin/bunshin-test"
