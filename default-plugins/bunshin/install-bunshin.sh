@@ -213,17 +213,8 @@ HELP
         fi
         ;;
     *)
-        # Check if there are active sessions (exclude EXITED sessions)
-        ACTIVE_SESSIONS=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | grep -v "EXITED" | wc -l)
-
-        if [ "$ACTIVE_SESSIONS" -gt 0 ]; then
-            # Active sessions exist - attach to first active session
-            SESSION_NAME=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | grep -v "EXITED" | head -1 | awk '{print $1}')
-            exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" attach "$SESSION_NAME" --create
-        else
-            # No active sessions - create new session with Claude layout
-            exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" --layout "$BUNSHIN_LAYOUT" "$@"
-        fi
+        # Always create new session with Claude layout
+        exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" --layout "$BUNSHIN_LAYOUT" "$@"
         ;;
 esac
 EOF

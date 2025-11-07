@@ -106,20 +106,7 @@ echo "📝 Step 4/4: Creating launch script..."
 cat > "$TEST_DIR/bin/bunshin-test" << 'SCRIPT'
 #!/bin/bash
 export ZELLIJ_CONFIG_DIR="TEST_DIR_PLACEHOLDER/config"
-ZELLIJ_BIN="TEST_DIR_PLACEHOLDER/bin/zellij"
-LAYOUT="TEST_DIR_PLACEHOLDER/config/bunshin.kdl"
-
-# Check if there are active sessions (exclude EXITED sessions)
-ACTIVE_SESSIONS=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | grep -v "EXITED" | wc -l)
-
-if [ "$ACTIVE_SESSIONS" -gt 0 ]; then
-    # Active sessions exist - attach to first active session
-    SESSION_NAME=$("$ZELLIJ_BIN" list-sessions 2>/dev/null | grep -v "EXITED" | head -1 | awk '{print $1}')
-    exec "$ZELLIJ_BIN" attach "$SESSION_NAME" --create
-else
-    # No active sessions - create new session with Claude layout
-    exec "$ZELLIJ_BIN" --layout "$LAYOUT" "$@"
-fi
+exec "TEST_DIR_PLACEHOLDER/bin/zellij" --layout "TEST_DIR_PLACEHOLDER/config/bunshin.kdl" "$@"
 SCRIPT
 
 # Replace TEST_DIR_PLACEHOLDER with actual path
