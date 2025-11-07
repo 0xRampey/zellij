@@ -91,7 +91,7 @@ else
     echo "   ⚠️  Warning: Plugin not found, will need to build it"
 fi
 
-# Create Zellij config for Bunshin
+# Create Zellij config for Bunshin with embedded layout
 echo "⚙️  Configuring Bunshin..."
 cat > "$BUNSHIN_DIR/config/config.kdl" << 'EOF'
 // Bunshin (分身) - Auto-generated Configuration
@@ -108,20 +108,7 @@ keybinds {
     }
 }
 
-// Auto-start Claude on launch
-default_layout "claude-orchestrator"
-EOF
-
-# Replace plugin path in config (macOS/Linux compatible)
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "s|BUNSHIN_PLUGIN_PATH|$BUNSHIN_DIR/plugins/bunshin.wasm|g" "$BUNSHIN_DIR/config/config.kdl"
-else
-    sed -i "s|BUNSHIN_PLUGIN_PATH|$BUNSHIN_DIR/plugins/bunshin.wasm|g" "$BUNSHIN_DIR/config/config.kdl"
-fi
-
-# Create claude-orchestrator layout
-echo "🎨 Creating layouts..."
-cat > "$BUNSHIN_DIR/config/layouts/claude-orchestrator.kdl" << 'EOF'
+// Embedded layout - Claude auto-starts in current directory
 layout {
     pane size=1 borderless=true {
         plugin location="tab-bar"
@@ -138,18 +125,12 @@ layout {
 }
 EOF
 
-# Create default layout (same as Zellij default but ready for customization)
-cat > "$BUNSHIN_DIR/layouts/default.kdl" << 'EOF'
-layout {
-    pane size=1 borderless=true {
-        plugin location="tab-bar"
-    }
-    pane
-    pane size=2 borderless=true {
-        plugin location="status-bar"
-    }
-}
-EOF
+# Replace plugin path in config (macOS/Linux compatible)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s|BUNSHIN_PLUGIN_PATH|$BUNSHIN_DIR/plugins/bunshin.wasm|g" "$BUNSHIN_DIR/config/config.kdl"
+else
+    sed -i "s|BUNSHIN_PLUGIN_PATH|$BUNSHIN_DIR/plugins/bunshin.wasm|g" "$BUNSHIN_DIR/config/config.kdl"
+fi
 
 # Create bunshin wrapper script
 echo "🔧 Creating bunshin command..."
@@ -160,9 +141,8 @@ cat > "$BUNSHIN_DIR/bin/bunshin" << 'EOF'
 BUNSHIN_DIR="HOME_DIR/.bunshin"
 ZELLIJ_BIN="ZELLIJ_PATH"
 BUNSHIN_CONFIG="$BUNSHIN_DIR/config/config.kdl"
-LAYOUTS_DIR="$BUNSHIN_DIR/config/layouts"
 
-# Set Zellij config directory (Zellij will look for layouts in config_dir/layouts/)
+# Set Zellij config directory
 export ZELLIJ_CONFIG_DIR="$BUNSHIN_DIR/config"
 
 # Parse arguments
@@ -192,8 +172,7 @@ Keybindings (inside Bunshin):
   q         Close orchestrator
 
 Examples:
-  bunshin                    # Normal launch
-  bunshin claude             # Auto-start Claude
+  bunshin                    # Launch (Claude auto-starts)
   bunshin --config           # Edit configuration
 
 HELP
@@ -208,21 +187,9 @@ HELP
             echo "Config location: $BUNSHIN_DIR/config/config.kdl"
         fi
         ;;
-    claude)
-        # Launch with Claude auto-start layout
-        exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" --layout "$LAYOUTS_DIR/claude-orchestrator.kdl"
-        ;;
-    "")
-        # Default launch
-        exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG"
-        ;;
     *)
-        # Custom layout or pass through to zellij
-        if [ -f "$LAYOUTS_DIR/$1.kdl" ]; then
-            exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" --layout "$LAYOUTS_DIR/$1.kdl"
-        else
-            exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" "$@"
-        fi
+        # Default launch - Claude auto-starts from embedded layout
+        exec "$ZELLIJ_BIN" --config "$BUNSHIN_CONFIG" "$@"
         ;;
 esac
 EOF

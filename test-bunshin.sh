@@ -36,7 +36,7 @@ echo ""
 echo "📁 Step 3/4: Setting up test environment..."
 TEST_DIR="$HOME/.bunshin-test"
 rm -rf "$TEST_DIR"
-mkdir -p "$TEST_DIR"/{bin,plugins,config/layouts}
+mkdir -p "$TEST_DIR"/{bin,plugins,config}
 
 # Copy Zellij binary
 cp target/release/zellij "$TEST_DIR/bin/"
@@ -44,10 +44,7 @@ cp target/release/zellij "$TEST_DIR/bin/"
 # Copy Bunshin plugin
 cp target/wasm32-wasip1/release/bunshin.wasm "$TEST_DIR/plugins/"
 
-# Copy layout (Zellij expects layouts in config_dir/layouts/)
-cp zellij-utils/assets/layouts/claude-orchestrator.kdl "$TEST_DIR/config/layouts/"
-
-# Create minimal config
+# Create config with embedded layout (no external files needed!)
 cat > "$TEST_DIR/config/config.kdl" << 'EOF'
 keybinds {
     shared_except "locked" {
@@ -60,7 +57,21 @@ keybinds {
     }
 }
 
-default_layout "claude-orchestrator"
+// Embedded layout - no external files needed!
+layout {
+    pane size=1 borderless=true {
+        plugin location="tab-bar"
+    }
+    pane split_direction="Vertical" {
+        pane {
+            command "claude"
+            // cwd defaults to current working directory
+        }
+    }
+    pane size=2 borderless=true {
+        plugin location="status-bar"
+    }
+}
 EOF
 
 # Replace plugin path (macOS/Linux compatible)
